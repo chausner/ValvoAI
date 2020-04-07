@@ -39,38 +39,6 @@ type private Variable =
     | Min2 of int * int
     | Average of int * int
 
-let private solve' (equationSystem : Variable []) maxIterations =
-    let mutable solution1 = Array.zeroCreate equationSystem.Length
-    let mutable solution2 = Array.zeroCreate equationSystem.Length
-    let mutable it = 0
-    while it < maxIterations do
-        for i = 0 to equationSystem.Length - 1 do
-            solution2.[i] <- 
-                match equationSystem.[i] with
-                | Constant x     -> x
-                | Var x          -> solution1.[x]
-                | Max3 (x, y, z) -> (max solution1.[x] solution1.[y] + max solution1.[y] solution1.[z]) / 2.0
-                | Min3 (x, y, z) -> (min solution1.[x] solution1.[y] + min solution1.[y] solution1.[z]) / 2.0
-                | Max2 (x, y)    -> max solution1.[x] solution1.[y]
-                | Min2 (x, y)    -> min solution1.[x] solution1.[y]
-                | Average (x, y) -> (solution1.[x] + solution1.[y]) / 2.0
-        let tmp = solution1
-        solution1 <- solution2
-        solution2 <- tmp
-        if solution1 = solution2 then
-            it <- maxIterations
-        (*elif it % 50 = 0 then
-            let diff = 
-                solution1
-                |> Seq.zip solution2
-                |> Seq.map (fun (s1, s2) -> abs(s1 - s2))
-            let maxDiff = diff |> Seq.max
-            //printfn "it: %A, max diff: %A, avg diff: %A" it maxDiff (diff |> Seq.average)
-            if maxDiff < 1e-5 then
-                it <- maxIterations*)
-        it <- it + 1
-    solution1
-
 let private solve (equationSystem : Variable []) maxIterations =
     let solveStep (solution : float []) (result : float []) =
         for i = 0 to equationSystem.Length - 1 do
