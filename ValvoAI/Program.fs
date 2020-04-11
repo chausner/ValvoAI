@@ -28,7 +28,7 @@ let simulateRandomBoardGame() =
         Console.ReadKey() |> ignore
     simulateGame board initialState mover1 mover2 100000 callback |> ignore
 
-// continuously read board state from running Valvo instance and display win probabilities and suggested next mvoe
+// continuously read board state from running Valvo instance and display win probabilities and suggested next move
 let trainer() = 
     while true do
         let board, state, largeMove = readBoardAndState()
@@ -75,9 +75,8 @@ let drawScoresForRandomBoard() =
 
 // find and draw random boards with interesting properties
 let findInterestingBoards() = 
-    PSeq.init 10000 (fun _ -> randomBoard 8 7)
-    |> PSeq.withMergeOptions ParallelMergeOptions.NotBuffered // avoids high memory usage, fine since order does not matter
-    |> PSeq.map (fun board ->
+    PSeq.init 10000 (fun _ -> 
+        let board = randomBoard 8 7
         let state = initState board Player1
         let scores = computeMinimaxScores minimaxScore board state 500
         let score = scores.[state]
@@ -86,6 +85,7 @@ let findInterestingBoards() =
         let winLooseScores = computeExpectedWinProbabilities board state mover1 mover2 500
         let p1WinProb, p2WinProb = winLooseScores.[state]
         board, state, score, winLooseScores, p1WinProb, p2WinProb)
+    |> PSeq.withMergeOptions ParallelMergeOptions.NotBuffered // avoids high memory usage, fine since order does not matter
     |> selectLowest 10 (fun (_, _, _, _, p1WinProb, p2WinProb) -> -(min p1WinProb p2WinProb))
     |> Seq.iter (fun (board, state, score, winLooseScores, p1WinProb, p2WinProb) -> 
         printfn "Score: %A, Player1 win probability: %.2f, Player2 win probability: %.2f" score (p1WinProb * 100.0) (p2WinProb * 100.0)
