@@ -6,6 +6,7 @@ type FieldColor = None | Red | Blue | Yellow | Purple
 
 type Player = Player1 | Player2
 
+[<Struct>]
 type GameBoard = {
     Width : int;
     Height : int;
@@ -58,6 +59,7 @@ let randomBoard width height =
     )
     { Width = width; Height = height; Fields = fields; Valves = valves }
 
+[<Struct>]
 type GameState = {
     Player1Position : int;
     Player2Position : int;
