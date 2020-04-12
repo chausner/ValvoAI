@@ -58,6 +58,16 @@ let randomBoard width height numColors =
     )
     { Width = width; Height = height; Fields = fields; Valves = valves }
 
+let randomSymmetricBoard width height numColors =
+    let board = randomBoard width height numColors
+    for i = width * height / 2 to width * height - 1 do
+        board.Fields.[i] <- board.Fields.[width * height - 1 - i]
+    for i = width * height / 2 to width * height - height - 2 do
+        let mirroredPosition = width * height - 1 - i
+        let leftPosition = mirroredPosition - (2 * (mirroredPosition % board.Height) + 1)        
+        board.Valves.[i] <- board.Valves.[leftPosition]
+    board
+
 [<Struct>]
 type GameState = {
     Player1Position : int;
