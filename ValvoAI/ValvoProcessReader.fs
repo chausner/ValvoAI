@@ -54,13 +54,13 @@ let readBoardAndState() =
         
         let board =
             let boardBuffer = readBytes hProcess (helperAddress + 0x39Cn) (6 * 56)
-            
+
             let reorder s =
                 s |> Seq.chunkBySize 7 |> Seq.mapi (fun i x -> if i % 2 = 1 then Seq.rev x else x |> Array.toSeq) |> Seq.concat
             let idToFieldColor x = 
-                [|Red;Yellow;Purple;Blue;None;None;None|].[int x]
+                if x > 3uy then None else Some (int x)
             let idToValveColor x = 
-                [|None;Red;Yellow;Purple;Blue|].[int x]
+                if x = 0uy then None else Some (int x - 1)
             
             let fields = [0..55] |> Seq.map (fun i -> boardBuffer.[i * 6]) |> Seq.map idToFieldColor |> reorder |> Seq.toArray
             let valves = [0..55] |> Seq.map (fun i -> boardBuffer.[i * 6 + 2]) |> Seq.map idToValveColor |> reorder |> Seq.toArray

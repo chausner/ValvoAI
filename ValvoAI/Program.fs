@@ -18,7 +18,7 @@ let greedyMover (state : GameState) (possibleStates : GameState list) =
 
 // simulate a random board game
 let simulateRandomBoardGame() = 
-    let board = randomBoard 8 7
+    let board = randomBoard 8 7 4
     let initialState = initState board Player1
     let scores = computeMinimaxScores minimaxScore board initialState 500
     let mover1 = minimaxMover scores
@@ -55,7 +55,7 @@ let trainer() =
 
 // draw scores and win probabilities for a random board
 let drawScoresForRandomBoard() = 
-    let board = randomBoard 8 7
+    let board = randomBoard 8 7 4
     let state = initState board Player1
     let scores = computeMinimaxScores minimaxScore board state 500
     let score = scores.[state]
@@ -76,7 +76,7 @@ let drawScoresForRandomBoard() =
 // find and draw random boards with interesting properties
 let findInterestingBoards() = 
     PSeq.init 10000 (fun _ -> 
-        let board = randomBoard 8 7
+        let board = randomBoard 8 7 4
         let state = initState board Player1
         let scores = computeMinimaxScores minimaxScore board state 500
         let score = scores.[state]
@@ -97,7 +97,7 @@ let findInterestingBoards() =
 // generate scatter plot data of win probabilities
 let generateScatterPlot() = 
     let output = 
-        PSeq.init 10000 (fun _ -> randomBoard 8 7)
+        PSeq.init 10000 (fun _ -> randomBoard 8 7 4)
         |> PSeq.withMergeOptions ParallelMergeOptions.NotBuffered // avoids high memory usage, fine since order does not matter
         |> PSeq.map (fun board ->
             let state = initState board Player1
@@ -124,7 +124,7 @@ let computeGameStatistics() =
 
     let _, elapsed = stopwatch (fun _ ->
         PSeq.init 2000 (fun i -> 
-            let board = randomBoard 8 7
+            let board = randomBoard 8 7 4
             let initialState = initState board [Player1; Player2].[i % 2]
             let scores = computeMinimaxScores minimaxScore board initialState 500
             let mover1 = minimaxMover scores

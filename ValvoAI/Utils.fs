@@ -105,17 +105,17 @@ let drawWinLooseScores (board : GameBoard) state (scores : IDictionary<GameState
 let drawState (board : GameBoard) (state : GameState) =
     let fieldColors =
         [None,   Color.FromArgb(214, 214, 214);
-         Red,    Color.FromArgb(255, 165, 165);
-         Blue,   Color.FromArgb(165, 255, 255);
-         Yellow, Color.FromArgb(255, 255, 165);
-         Purple, Color.FromArgb(255, 165, 255)] |> Map.ofList
+         Some 0, Color.FromArgb(255, 165, 165);
+         Some 1, Color.FromArgb(255, 255, 165);
+         Some 2, Color.FromArgb(255, 165, 255);
+         Some 3, Color.FromArgb(165, 255, 255)] |> Map.ofList
     let startField1Color = Color.FromArgb(132, 255, 132)
     let startField2Color = Color.FromArgb(247, 206, 206)
     let valveColors =
-        [Red,    Color.Red;
-         Blue,   Color.Cyan;
-         Yellow, Color.Yellow;
-         Purple, Color.Magenta] |> Map.ofList
+        [Some 0, Color.Red;
+         Some 1, Color.Yellow;
+         Some 2, Color.Magenta;
+         Some 3, Color.Cyan] |> Map.ofList
     let fieldWidth = 47
     let fieldHeight = 41
     let fieldXY i =
@@ -158,9 +158,9 @@ let drawState (board : GameBoard) (state : GameState) =
             valveInnerPen.EndCap <- LineCap.Round
             let p1, p2 =
                 if board.Valves.[i] = openValveColor then
-                   new Point((fx + 1) * fieldWidth, fy * fieldHeight + 7), new Point((fx + 1) * fieldWidth, (fy + 1) * fieldHeight - 7)
+                    new Point((fx + 1) * fieldWidth, fy * fieldHeight + 7), new Point((fx + 1) * fieldWidth, (fy + 1) * fieldHeight - 7)
                 else
-                   new Point((fx + 1) * fieldWidth, fy * fieldHeight + 18), new Point((fx + 1) * fieldWidth, (fy + 1) * fieldHeight - 18)
+                    new Point((fx + 1) * fieldWidth, fy * fieldHeight + 18), new Point((fx + 1) * fieldWidth, (fy + 1) * fieldHeight - 18)
             graphics.DrawLine(valveOuterPen, p1, p2)
             graphics.DrawLine(valveInnerPen, p1, p2)
 

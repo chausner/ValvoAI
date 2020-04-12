@@ -2,7 +2,7 @@
 
 open System
 
-type FieldColor = None | Red | Blue | Yellow | Purple
+type FieldColor = int option
 
 type Player = Player1 | Player2
 
@@ -22,16 +22,16 @@ type ThreadSafeRandom =
 
     static member GetInstance() =
         match ThreadSafeRandom.localRandom with
-        | Option.None -> 
+        | None -> 
             lock globalRandom (fun _ ->
                 match ThreadSafeRandom.localRandom with
-                | Option.None ->
+                | None ->
                     let seed = globalRandom.Next()                
                     let random = new Random(seed)
                     ThreadSafeRandom.localRandom <- Some(random)
                     random
-                | Option.Some random -> random)            
-        | Option.Some random -> random
+                | Some random -> random)            
+        | Some random -> random
 
 module List =
     let chooseRandomly list =
@@ -43,19 +43,18 @@ module Array =
         let i = ThreadSafeRandom.GetInstance().Next(array |> Array.length)
         array |> Array.item i
 
-let randomBoard width height =
-    let colors = [|Red; Blue; Yellow; Purple|]
+let randomBoard width height numColors =
     let fields = Array.init (width * height) (fun i -> 
         if i = 0 || i = height - 1 || i = width * height - 1 || i = width * height - 1 - (height - 1) then
             None // starting positions and bottom left and bottom right corners
         else
-            colors |> Array.chooseRandomly
+            Some (ThreadSafeRandom.GetInstance().Next(numColors))
     )
     let valves = Array.init (width * height) (fun i -> 
         if i = 0 || i = width * height - (2 * height) || i >= width * height - height - 1 || (i + 1) % height = 0 then
             None
         else
-            colors |> Array.chooseRandomly
+            Some (ThreadSafeRandom.GetInstance().Next(numColors))
     )
     { Width = width; Height = height; Fields = fields; Valves = valves }
 
