@@ -6,13 +6,13 @@ open System.Runtime.InteropServices;
 open Valvo
 
 module private NativeMethods =
-    [<DllImport("kernel32.dll")>]
+    [<DllImport("kernel32.dll", SetLastError = true)>]
     extern nativeint OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId)
 
-    [<DllImport("kernel32.dll")>]
-    extern bool ReadProcessMemory(nativeint hProcess, nativeint lpBaseAddress, byte[] lpBuffer, int dwSize, int& lpNumberOfBytesRead)
+    [<DllImport("kernel32.dll", SetLastError = true)>]
+    extern bool ReadProcessMemory(nativeint hProcess, nativeint lpBaseAddress, byte[] lpBuffer, int dwSize, nativeint& lpNumberOfBytesRead)
 
-    [<DllImport("kernel32.dll")>]
+    [<DllImport("kernel32.dll", SetLastError = true)>]
     extern bool CloseHandle(nativeint hObject)
 
     [<DllImport("user32.dll", SetLastError = true)>]
@@ -28,11 +28,11 @@ module private NativeMethods =
 
 let private readBytes hProcess address length =
     let buffer = Array.zeroCreate length
-    let mutable bytesRead = 0
+    let mutable bytesRead = 0n
 
     let success = NativeMethods.ReadProcessMemory(hProcess, address, buffer, buffer.Length, &bytesRead)
 
-    if not success || bytesRead <> buffer.Length then
+    if not success || bytesRead <> nativeint (buffer.Length) then
         failwith "Error reading process memory"
 
     buffer
