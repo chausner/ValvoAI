@@ -62,8 +62,8 @@ let readBoardAndState() =
             let idToValveColor x = 
                 if x = 0uy then ValueNone else ValueSome (int x - 1)
             
-            let fields = [0..55] |> Seq.map (fun i -> boardBuffer.[i * 6]) |> Seq.map idToFieldColor |> reorder |> Seq.toArray
-            let valves = [0..55] |> Seq.map (fun i -> boardBuffer.[i * 6 + 2]) |> Seq.map idToValveColor |> reorder |> Seq.toArray
+            let fields = [0..55] |> Seq.map (fun i -> boardBuffer[i * 6]) |> Seq.map idToFieldColor |> reorder |> Seq.toArray
+            let valves = [0..55] |> Seq.map (fun i -> boardBuffer[i * 6 + 2]) |> Seq.map idToValveColor |> reorder |> Seq.toArray
         
             { Width = 8; Height = 7; Fields = fields; Valves = valves }
         
@@ -83,7 +83,7 @@ let readBoardAndState() =
             let turnBuffer = readBytes hProcess (helperAddress + 0x502n) 1
             
             let turn = 
-                match turnBuffer.[0] with
+                match turnBuffer[0] with
                 | 0uy 
                 | 1uy -> Player1
                 | 2uy -> Player2
@@ -94,7 +94,7 @@ let readBoardAndState() =
         let largeMove =
             let largeMoveBuffer = readBytes hProcess (helperAddress + 0xFF0n) 1
             
-            match largeMoveBuffer.[0] with
+            match largeMoveBuffer[0] with
             | 1uy -> false
             | 2uy -> true
             | _   -> failwith "Unexpected value read"

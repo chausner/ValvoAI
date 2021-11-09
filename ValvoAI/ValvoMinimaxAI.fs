@@ -67,15 +67,15 @@ type private Variable =
 let private solve (equationSystem : Variable []) maxIterations =
     let solveStep (solution : float []) (result : float []) =
         for i = 0 to equationSystem.Length - 1 do
-            result.[i] <- 
-                match equationSystem.[i] with
+            result[i] <- 
+                match equationSystem[i] with
                 | Constant x     -> x
-                | Var x          -> solution.[x]
-                | Max3 (x, y, z) -> (max solution.[x] solution.[y] + max solution.[y] solution.[z]) / 2.0
-                | Min3 (x, y, z) -> (min solution.[x] solution.[y] + min solution.[y] solution.[z]) / 2.0
-                | Max2 (x, y)    -> max solution.[x] solution.[y]
-                | Min2 (x, y)    -> min solution.[x] solution.[y]
-                | Average (x, y) -> (solution.[x] + solution.[y]) / 2.0
+                | Var x          -> solution[x]
+                | Max3 (x, y, z) -> (max solution[x] solution[y] + max solution[y] solution[z]) / 2.0
+                | Min3 (x, y, z) -> (min solution[x] solution[y] + min solution[y] solution[z]) / 2.0
+                | Max2 (x, y)    -> max solution[x] solution[y]
+                | Min2 (x, y)    -> min solution[x] solution[y]
+                | Average (x, y) -> (solution[x] + solution[y]) / 2.0
     let rec solveInner (solution1 : float []) (solution2 : float []) it =
         solveStep solution1 solution2
         if it = maxIterations || solution1 = solution2 then
@@ -128,7 +128,7 @@ let computeExpectedScores board startingState mover1 mover2 maxIterations =
     let p1Scores = computeExpectedValues (score Player1) board startingState mover1 mover2 maxIterations
     let p2Scores = computeExpectedValues (score Player2) board startingState mover1 mover2 maxIterations
     p1Scores.Keys
-    |> Seq.map (fun state -> state, (p1Scores.[state], p2Scores.[state]))
+    |> Seq.map (fun state -> state, (p1Scores[state], p2Scores[state]))
     |> dict
 
 let computeExpectedWinProbabilities board startingState mover1 mover2 maxIterations =
@@ -141,8 +141,8 @@ let computeExpectedWinProbabilities board startingState mover1 mover2 maxIterati
     let p1WinProbabilities = computeExpectedValues (winProbability Player1) board startingState mover1 mover2 maxIterations
     let p2WinProbabilities = computeExpectedValues (winProbability Player2) board startingState mover1 mover2 maxIterations
     p1WinProbabilities.Keys
-    |> Seq.map (fun state -> state, (p1WinProbabilities.[state], p2WinProbabilities.[state]))
+    |> Seq.map (fun state -> state, (p1WinProbabilities[state], p2WinProbabilities[state]))
     |> dict
 
 let minimaxMover (scores : IDictionary<GameState,float>) state possibleStates =
-    possibleStates |> (if state.Turn = Player1 then List.maxBy else List.minBy) (fun st -> scores.[st])
+    possibleStates |> (if state.Turn = Player1 then List.maxBy else List.minBy) (fun st -> scores[st])

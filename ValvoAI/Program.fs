@@ -37,19 +37,19 @@ let trainer() =
             let mover1 = minimaxMover scores
             let mover2 = minimaxMover scores
             let expScores = computeExpectedScores board state mover1 mover2 175 
-            let p1Score, p2Score = expScores.[state]
+            let p1Score, p2Score = expScores[state]
             let expWinProb = computeExpectedWinProbabilities board state mover1 mover2 175 
-            let p1WinProb, p2WinProb = expWinProb.[state]
+            let p1WinProb, p2WinProb = expWinProb[state]
             Console.Clear()
-            printfn "Score: %f" scores.[state]
+            printfn "Score: %f" scores[state]
             printfn "Expected scores: Player 1: %.2f Player 2: %.2f" p1Score p2Score            
             printfn "Probabilities: Player 1 win: %.2f%% Player 2 win: %.2f%% Draw: %.2f%%" (p1WinProb * 100.0) (p2WinProb * 100.0) ((1.0 - p1WinProb - p2WinProb) * 100.0)
             let ns = nextStates board state
             if not ns.IsEmpty then
-                let possibleStates = ns.[min (if largeMove then 1 else 0) (ns.Length - 1)]
+                let possibleStates = ns[min (if largeMove then 1 else 0) (ns.Length - 1)]
                 if not possibleStates.IsEmpty then
-                    possibleStates |> Seq.iter (fun st -> printfn "Scores: %f" scores.[st])
-                    let bestState = possibleStates |> Seq.maxBy (fun st -> scores.[st])
+                    possibleStates |> Seq.iter (fun st -> printfn "Scores: %f" scores[st])
+                    let bestState = possibleStates |> Seq.maxBy (fun st -> scores[st])
                     drawState board bestState |> showBitmap
         Thread.Sleep(100)
 
@@ -58,11 +58,11 @@ let drawScoresForRandomBoard() =
     let board = randomBoard 8 7 4
     let state = initState board Player1
     let scores = computeMinimaxScores minimaxScore board state 500
-    let score = scores.[state]
+    let score = scores[state]
     let mover1 = minimaxMover scores
     let mover2 = minimaxMover scores
     let winLooseScores = computeExpectedWinProbabilities board state mover1 mover2 500
-    let p1WinProb, p2WinProb = winLooseScores.[state]
+    let p1WinProb, p2WinProb = winLooseScores[state]
     printfn "Score: %A, Player1 win probability: %.2f, Player2 win probability: %.2f" score (p1WinProb * 100.0) (p2WinProb * 100.0)
     drawState board state |> showBitmap
     Console.ReadKey() |> ignore
@@ -79,11 +79,11 @@ let findInterestingBoards() =
         let board = randomBoard 8 7 4
         let state = initState board Player1
         let scores = computeMinimaxScores minimaxScore board state 500
-        let score = scores.[state]
+        let score = scores[state]
         let mover1 = minimaxMover scores
         let mover2 = minimaxMover scores
         let winLooseScores = computeExpectedWinProbabilities board state mover1 mover2 500
-        let p1WinProb, p2WinProb = winLooseScores.[state]
+        let p1WinProb, p2WinProb = winLooseScores[state]
         board, state, score, winLooseScores, p1WinProb, p2WinProb)
     |> PSeq.withMergeOptions ParallelMergeOptions.NotBuffered // avoids high memory usage, fine since order does not matter
     |> selectLowest 10 (fun (_, _, _, _, p1WinProb, p2WinProb) -> -(min p1WinProb p2WinProb))
@@ -105,7 +105,7 @@ let generateScatterPlot() =
             let mover1 = minimaxMover scores
             let mover2 = minimaxMover scores
             let winLooseScores = computeExpectedWinProbabilities board state mover1 mover2 500
-            let p1WinProb, p2WinProb = winLooseScores.[state]
+            let p1WinProb, p2WinProb = winLooseScores[state]
             p1WinProb, p2WinProb)
         |> Seq.map (fun (p1WinProb, p2WinProb) -> sprintf "%f;%f" p1WinProb p2WinProb)
         |> Seq.append (Seq.singleton "p1WinProb;p2WinProb")
@@ -125,7 +125,7 @@ let computeGameStatistics() =
     let _, elapsed = stopwatch (fun _ ->
         PSeq.init 2000 (fun i -> 
             let board = randomBoard 8 7 4
-            let initialState = initState board [Player1; Player2].[i % 2]
+            let initialState = initState board ([Player1; Player2][i % 2])
             let scores = computeMinimaxScores minimaxScore board initialState 500
             let mover1 = minimaxMover scores
             let mover2 = minimaxMover scores

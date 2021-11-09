@@ -62,11 +62,11 @@ let randomBoard width height numColors =
 let randomSymmetricBoard width height numColors =
     let board = randomBoard width height numColors
     for i = width * height / 2 to width * height - 1 do
-        board.Fields.[i] <- board.Fields.[width * height - 1 - i]
+        board.Fields[i] <- board.Fields[width * height - 1 - i]
     for i = width * height / 2 to width * height - height - 2 do
         let mirroredPosition = width * height - 1 - i
         let leftPosition = mirroredPosition - (2 * (mirroredPosition % board.Height) + 1)        
-        board.Valves.[i] <- board.Valves.[leftPosition]
+        board.Valves[i] <- board.Valves[leftPosition]
     board
 
 [<Struct>]
@@ -129,8 +129,8 @@ let nextStates board state =
             let moveThroughValves (state : GameState) player =
                 let openValveColor = 
                     match player with
-                    | Player1 -> board.Fields.[state.Player2Position]
-                    | Player2 -> board.Fields.[state.Player1Position]
+                    | Player1 -> board.Fields[state.Player2Position]
+                    | Player2 -> board.Fields[state.Player1Position]
                 if openValveColor = ValueNone then state else
                 let position =
                     match player with
@@ -138,14 +138,14 @@ let nextStates board state =
                     | Player2 -> state.Player2Position
                 let rec findLeftValvesEnd position =
                     let leftPosition = position - (2 * (position % board.Height) + 1)
-                    if leftPosition >= 0 && board.Valves.[leftPosition] = openValveColor && 
+                    if leftPosition >= 0 && board.Valves[leftPosition] = openValveColor && 
                         state.Player1Position <> leftPosition && state.Player2Position <> leftPosition then
                         findLeftValvesEnd leftPosition
                     else
                         position
                 let rec findRightValvesEnd position =
                     let rightPosition = position + (2 * board.Height - 1 - 2 * (position % board.Height))
-                    if rightPosition < board.Width * board.Height && board.Valves.[position] = openValveColor && 
+                    if rightPosition < board.Width * board.Height && board.Valves[position] = openValveColor && 
                         state.Player1Position <> rightPosition && state.Player2Position <> rightPosition then
                         findRightValvesEnd rightPosition
                     else

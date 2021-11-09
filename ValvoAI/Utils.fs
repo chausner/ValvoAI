@@ -50,7 +50,7 @@ let drawScores (board : GameBoard) state (scores : IDictionary<GameState,float>)
     |> Seq.map (fun kvp -> kvp.Key, kvp.Value)
     |> Seq.iter (fun (state, score) ->
         let x, y = stateToIndices state
-        matrix.[x, y] <- score
+        matrix[x, y] <- score
         let c = max (min (127 + int (score / float (board.Width * board.Height) * 10.0 + 0.5)) 255) 0
         let color = Color.FromArgb(c, c, c)
         bitmap.SetPixel(x, y, color)
@@ -72,10 +72,10 @@ let drawScores' (board : GameBoard) state (scores : IDictionary<GameState,float>
     |> Seq.iter (fun (state, score) ->
         let x, y = stateToIndices state
         match state.Turn with
-        | Player1 -> matrix.[x, y] <- score, snd matrix.[x, y]
-        | Player2 -> matrix.[x, y] <- fst matrix.[x, y], score
-        let r = max (min (127 + int (fst matrix.[x, y] / float (board.Width * board.Height) * 10.0 + 0.5)) 255) 0
-        let b = max (min (127 + int (snd matrix.[x, y] / float (board.Width * board.Height) * 10.0 + 0.5)) 255) 0
+        | Player1 -> matrix[x, y] <- score, snd matrix[x, y]
+        | Player2 -> matrix[x, y] <- fst matrix[x, y], score
+        let r = max (min (127 + int (fst matrix[x, y] / float (board.Width * board.Height) * 10.0 + 0.5)) 255) 0
+        let b = max (min (127 + int (snd matrix[x, y] / float (board.Width * board.Height) * 10.0 + 0.5)) 255) 0
         let color = Color.FromArgb(r, 0, b)
         bitmap.SetPixel(x, y, color)
     )
@@ -130,7 +130,7 @@ let drawState (board : GameBoard) (state : GameState) =
         let c = 
             if i = 0 then startField1Color
             elif i = board.Width * board.Height - 1 then startField2Color
-            else Map.find board.Fields.[i] fieldColors
+            else Map.find board.Fields[i] fieldColors
         graphics.FillRectangle(new SolidBrush(c), fx * fieldWidth, fy * fieldHeight, fieldWidth, fieldHeight)
         graphics.DrawRectangle(Pens.Black, fx * fieldWidth, fy * fieldHeight, fieldWidth, fieldHeight)
 
@@ -145,11 +145,11 @@ let drawState (board : GameBoard) (state : GameState) =
                 new Point((i + 1) * fieldWidth, fieldHeight), new Point((i + 1) * fieldWidth, board.Height * fieldHeight)
         graphics.DrawLine(wallPen, p1, p2)
 
-    let openValveColor = board.Fields.[if state.Turn = Player1 then state.Player2Position else state.Player1Position]
+    let openValveColor = board.Fields[if state.Turn = Player1 then state.Player2Position else state.Player1Position]
     for i = 0 to board.Width * board.Height - 1 do
         let fx, fy = fieldXY i
-        if board.Valves.[i] <> ValueNone then
-            let c = Map.find board.Valves.[i] valveColors        
+        if board.Valves[i] <> ValueNone then
+            let c = Map.find board.Valves[i] valveColors        
             let valveOuterPen = new Pen(Color.Black, 11.0f)
             let valveInnerPen = new Pen(c, 7.0f)
             valveOuterPen.StartCap <- LineCap.Round
@@ -157,7 +157,7 @@ let drawState (board : GameBoard) (state : GameState) =
             valveInnerPen.StartCap <- LineCap.Round
             valveInnerPen.EndCap <- LineCap.Round
             let p1, p2 =
-                if board.Valves.[i] = openValveColor then
+                if board.Valves[i] = openValveColor then
                     new Point((fx + 1) * fieldWidth, fy * fieldHeight + 7), new Point((fx + 1) * fieldWidth, (fy + 1) * fieldHeight - 7)
                 else
                     new Point((fx + 1) * fieldWidth, fy * fieldHeight + 18), new Point((fx + 1) * fieldWidth, (fy + 1) * fieldHeight - 18)
