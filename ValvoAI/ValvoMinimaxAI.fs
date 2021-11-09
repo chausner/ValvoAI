@@ -87,9 +87,8 @@ let private solve (equationSystem : Variable []) maxIterations =
     solveInner solution1 solution2 0
 
 let computeMinimaxScores scoreFunction board startingState maxIterations =
-    let possibleStates = reachableStates board startingState |> Seq.toArray
-    let states = possibleStates |> Seq.mapi (fun i st -> st, i) |> dict
-    let stateToIndex state = states.[state]
+    let possibleStates = allStates board
+    let stateToIndex (state : GameState) = (state.Player1Position * (board.Width * board.Height - 1) + state.Player2Position - (if state.Player2Position > state.Player1Position then 1 else 0)) * 2 + (match state.Turn with | Player1 -> 0 | _ -> 1)
     let variable state = 
         match nextStates board state, state.Turn with
         | [[]],                 _                    -> Constant (scoreFunction board state)
@@ -108,9 +107,8 @@ let computeExpectedValues scoreFunction board startingState mover1 mover2 maxIte
         match state.Turn with
         | Player1 -> mover1 state possibleStates
         | Player2 -> mover2 state possibleStates
-    let possibleStates = reachableStates board startingState |> Seq.toArray
-    let states = possibleStates |> Seq.mapi (fun i st -> st, i) |> dict
-    let stateToIndex state = states.[state]
+    let possibleStates = allStates board
+    let stateToIndex (state : GameState) = (state.Player1Position * (board.Width * board.Height - 1) + state.Player2Position - (if state.Player2Position > state.Player1Position then 1 else 0)) * 2 + (match state.Turn with | Player1 -> 0 | _ -> 1)
     let variable state = 
         match nextStates board state with
         | [[]]             -> Constant (scoreFunction board state)
