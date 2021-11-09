@@ -2,8 +2,9 @@
 
 open System
 
-type FieldColor = int option
+type FieldColor = int voption
 
+[<Struct>]
 type Player = Player1 | Player2
 
 [<Struct>]
@@ -46,15 +47,15 @@ module Array =
 let randomBoard width height numColors =
     let fields = Array.init (width * height) (fun i -> 
         if i = 0 || i = height - 1 || i = width * height - 1 || i = width * height - 1 - (height - 1) then
-            None // starting positions and bottom left and bottom right corners
+            ValueNone // starting positions and bottom left and bottom right corners
         else
-            Some (ThreadSafeRandom.GetInstance().Next(numColors))
+            ValueSome (ThreadSafeRandom.GetInstance().Next(numColors))
     )
     let valves = Array.init (width * height) (fun i -> 
         if i = 0 || i = width * height - (2 * height) || i >= width * height - height - 1 || (i + 1) % height = 0 then
-            None
+            ValueNone
         else
-            Some (ThreadSafeRandom.GetInstance().Next(numColors))
+            ValueSome (ThreadSafeRandom.GetInstance().Next(numColors))
     )
     { Width = width; Height = height; Fields = fields; Valves = valves }
 
@@ -85,6 +86,7 @@ let initState board turn =
       Player2Position = startField board Player2;
       Turn = turn }
 
+[<Struct>]
 type EndState = NotEnded | Player1Wins | Player2Wins | Draw
 
 let isEndState board state =
@@ -129,7 +131,7 @@ let nextStates board state =
                     match player with
                     | Player1 -> board.Fields.[state.Player2Position]
                     | Player2 -> board.Fields.[state.Player1Position]
-                if openValveColor = None then state else
+                if openValveColor = ValueNone then state else
                 let position =
                     match player with
                     | Player1 -> state.Player1Position

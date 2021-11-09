@@ -104,18 +104,18 @@ let drawWinLooseScores (board : GameBoard) state (scores : IDictionary<GameState
 
 let drawState (board : GameBoard) (state : GameState) =
     let fieldColors =
-        [None,   Color.FromArgb(214, 214, 214);
-         Some 0, Color.FromArgb(255, 165, 165);
-         Some 1, Color.FromArgb(255, 255, 165);
-         Some 2, Color.FromArgb(255, 165, 255);
-         Some 3, Color.FromArgb(165, 255, 255)] |> Map.ofList
+        [ValueNone,   Color.FromArgb(214, 214, 214);
+         ValueSome 0, Color.FromArgb(255, 165, 165);
+         ValueSome 1, Color.FromArgb(255, 255, 165);
+         ValueSome 2, Color.FromArgb(255, 165, 255);
+         ValueSome 3, Color.FromArgb(165, 255, 255)] |> Map.ofList
     let startField1Color = Color.FromArgb(132, 255, 132)
     let startField2Color = Color.FromArgb(247, 206, 206)
     let valveColors =
-        [Some 0, Color.Red;
-         Some 1, Color.Yellow;
-         Some 2, Color.Magenta;
-         Some 3, Color.Cyan] |> Map.ofList
+        [ValueSome 0, Color.Red;
+         ValueSome 1, Color.Yellow;
+         ValueSome 2, Color.Magenta;
+         ValueSome 3, Color.Cyan] |> Map.ofList
     let fieldWidth = 47
     let fieldHeight = 41
     let fieldXY i =
@@ -148,7 +148,7 @@ let drawState (board : GameBoard) (state : GameState) =
     let openValveColor = board.Fields.[if state.Turn = Player1 then state.Player2Position else state.Player1Position]
     for i = 0 to board.Width * board.Height - 1 do
         let fx, fy = fieldXY i
-        if board.Valves.[i] <> None then
+        if board.Valves.[i] <> ValueNone then
             let c = Map.find board.Valves.[i] valveColors        
             let valveOuterPen = new Pen(Color.Black, 11.0f)
             let valveInnerPen = new Pen(c, 7.0f)

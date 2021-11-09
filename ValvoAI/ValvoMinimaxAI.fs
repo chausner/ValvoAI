@@ -16,6 +16,30 @@ let reachableStates board initialState =
                 newStates.Add(st)
     states
 
+let reachableStatesNew board initialState =
+    let states = new HashSet<GameState>()
+    states.Add(initialState) |> ignore
+    let rec reachableStatesInner newStates =
+        let newStates' = 
+            newStates
+            |> Seq.collect (nextStates board)
+            |> Seq.concat
+            |> Seq.filter (fun st -> states.Add(st))
+            |> Seq.toArray        
+        if not (newStates' |> Array.isEmpty) then
+            reachableStatesInner newStates'
+    reachableStatesInner [|initialState|]
+    states
+
+let allStates (board : GameBoard) =
+    seq {
+        for pos1 = 0 to board.Width * board.Height - 1 do
+            for pos2 = 0 to board.Width * board.Height - 1 do
+                if pos1 <> pos2 then
+                    yield { Player1Position = pos1; Player2Position = pos2; Turn = Player1 }
+                    yield { Player1Position = pos1; Player2Position = pos2; Turn = Player2 }
+    } |> Seq.toArray
+
 let minimaxScore board state =
     match isEndState board state with
     | Player1Wins, points1, points2 
@@ -30,14 +54,15 @@ let minimaxWinProbability board state =
     | Draw,        _, _ -> 0.0
     | NotEnded,    _, _ -> failwith "State has to be an end state"
 
+[<Struct>]
 type private Variable =
-    | Constant of float
-    | Var of int
-    | Max3 of int * int * int
-    | Min3 of int * int * int
-    | Max2 of int * int
-    | Min2 of int * int
-    | Average of int * int
+    | Constant of c: float
+    | Var of v: int
+    | Max3 of x: int * y: int * z: int
+    | Min3 of a: int * b: int * cc:int
+    | Max2 of d:int * e:int
+    | Min2 of f:int * g:int
+    | Average of h:int * i:int
 
 let private solve (equationSystem : Variable []) maxIterations =
     let solveStep (solution : float []) (result : float []) =
